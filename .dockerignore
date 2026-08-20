@@ -3,3 +3,4 @@
 __pycache__/
 *.pyc
 .git
+.nasdaq_itch_order_book_env/
