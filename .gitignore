@@ -1,2 +1,4 @@
 .env
 .nasdaq_itch_order_book_env/
+raw_data/*
+!raw_data/

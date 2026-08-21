@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  order_book_app:
+    build: .
+    # This keeps Docker dynamically tied to your active .env file
+    env_file:
+      - .env 
+    # Mounts config.yaml so changes on Windows reflect inside Docker instantly without a rebuild
+    volumes:
+      - ./config.yaml:/app/config.yaml 
+      - ./raw_data:/app/raw_data #makes it so that the raw_data folder is accessible inside the container & vice versa
+      
