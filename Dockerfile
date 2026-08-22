@@ -11,4 +11,4 @@ COPY config.yaml .
 COPY main.py .
 
 # Define execution command
-CMD ["python", "main.py"]
+ENTRYPOINT ["python", "main.py"]
