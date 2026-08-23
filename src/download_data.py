@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 import databento as db
-import yaml
 def download_stock_symbol_data(symbol,date,output):
     
     """Downloads market data for a specific stock symbol and date."""

@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy configuration structure and application logic
 COPY config.yaml .
 COPY main.py .
+COPY . .
 
 # Define execution command
 ENTRYPOINT ["python", "main.py"]

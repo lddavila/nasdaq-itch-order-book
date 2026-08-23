@@ -8,4 +8,4 @@ services:
     volumes:
       - ./config.yaml:/app/config.yaml 
       - ./raw_data:/app/raw_data #makes it so that the raw_data folder is accessible inside the container & vice versa
-      
+      - ./book_generation_from_raw_data:/app/book_generation_from_raw_data #makes it so that the book_generation_from_raw_data folder is accessible inside the container & vice versa
