@@ -14,3 +14,7 @@ def reconstruct_data(filepath, output):
     """
     
     print(f"Reconstructing data from {filepath} and saving to {output}")
+
+    #read the raw data file using DBNStore
+    store = db.DBNStore.from_file(filepath)
+    

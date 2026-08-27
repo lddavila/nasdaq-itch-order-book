@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 import databento as db
-def download_stock_symbol_data(symbol,date,output):
+def download_stock_symbol_data(symbol,date,output,start_time,end_time):
     
     """Downloads market data for a specific stock symbol and date."""
     # Load environment variables
@@ -27,8 +27,8 @@ def download_stock_symbol_data(symbol,date,output):
                 dataset="XNAS.ITCH",
                 schema="mbo",
                 symbols=[symbol],
-                start=f"{date}T13:30:00",
-                end=f"{date}T20:00:00"
+                start=f"{date}{start_time}",
+                end=f"{date}{end_time}"
             )
         except Exception as e:
             print(f"Error downloading data for {symbol} on {date}: {e}")

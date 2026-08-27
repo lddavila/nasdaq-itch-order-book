@@ -9,9 +9,11 @@ def build_download_command_parser(sub_parsers):
     )
     
     # Add required arguments for the download command
-    download_parser.add_argument("--date", required=True, help="Date in YYYY-MM-DD format")
+    download_parser.add_argument('-d','--date', required=True, help="Date in YYYY-MM-DD format")
     download_parser.add_argument("-s", "--symbol", required=True, help="Stock symbol to download data for")
     download_parser.add_argument("-o", "--output", type=str, default=None, help="Output file path")
+    download_parser.add_argument('-st','--start_time', type=str, default=None, help='beginning of timeframe for the data you want to download in (default: 1d) write it in YYYY-MM-DDTHH:MM:SS format')
+    download_parser.add_argument('-et','--end_time', type=str, default=None, help='end of timeframe for the data you want to download in (default: 1d) write it in YYYY-MM-DDTHH:MM:SS format')
 
 def build_reconstruct_command_parser(sub_parsers):
     """Builds the parser for the reconstruct command."""

@@ -1,4 +1,7 @@
 import databento as db
+from dataclasses import dataclass
+
+@dataclass(slots=True)
 class Order:
     order_id: int
     price: float
@@ -6,6 +9,7 @@ class Order:
     side: str  # 'buy' or 'sell'
     size: int
     timestamp: int
+    priority_ts_event: int
 
 class OrderTracker:
     def __init__(self) -> None:
@@ -46,6 +50,7 @@ class OrderTracker:
         self.orders[order.order_id] = order
 
     def cancel(self,message:db.MBOMsg) -> None:
+
         if message.order_id not in self.orders:
             f"cannot cancel order with ID {message.order_id} because it does not exist."
             raise ValueError(f"Order ID {message.order_id} does not exist.")
@@ -56,22 +61,34 @@ class OrderTracker:
         order.size -= message.size
         if order.size <= 0:
             del self.orders[message.order_id]
-        def modify(self,message:db.MBOMsg) -> None:
-            if message.order_id not in self.orders:
-                raise ValueError(f"Order ID {message.order_id} does not exist.")
-            order = self.orders[message.order_id]
-            if message.price is not None:
-                order.price = message.price
-            if message.quantity is not None:
-                order.quantity = message.quantity
-            if message.size is not None:
-                order.size = message.size
-            if message.side is not None:
-                order.side = message.side
-            if message.timestamp is not None:
-                order.timestamp = message.timestamp
-            loses_priority = (message.price != order.price) or (message.size > order.size)
+    def modify(self,message:db.MBOMsg) -> None:
+        if message.order_id not in self.orders:
+            raise ValueError(f"Order ID {message.order_id} does not exist.")
+        order = self.orders[message.order_id]
+        if message.price is not None:
             order.price = message.price
+        if message.quantity is not None:
+            order.quantity = message.quantity
+        if message.size is not None:
             order.size = message.size
-            if loses_priority:
-                order.ts_event = message.ts_event      
+        if message.side is not None:
+            order.side = message.side
+        if message.timestamp is not None:
+            order.timestamp = message.timestamp
+        loses_priority = (message.price != order.price) or (message.size > order.size)
+        order.price = message.price
+        order.size = message.size
+        if loses_priority:
+            order.ts_event = message.ts_event    
+
+    def clear(self) -> None:
+        self.orders.clear()
+
+    def get(self,order_id:int) -> Order:
+        return self.orders.get(order_id)
+
+    def __contains__(self,order_id:int) -> bool:
+        return order_id in self.orders
+
+    def __len__(self) -> int:
+        return len(self.orders)
