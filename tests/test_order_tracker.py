@@ -60,35 +60,35 @@ def test_complete_order_lifecycle():
     assert len(tracker)==0
     assert 1 not in tracker
 
-    def test_duplicate_order_is_rejected():
-        tracker = OrderTracker()
+def test_duplicate_order_is_rejected():
+    tracker = OrderTracker()
 
+    tracker.apply(message("A"))
+
+    with pytest.raises(ValueError, match="DUPLICATION ERROR: Order ID 1 already exists."):
         tracker.apply(message("A"))
 
-        with pytest.raises(ValueError, match="already active"):
-            tracker.apply(message("A"))
+def test_unknown_cancellation_is_rejected():
+    tracker = OrderTracker()
+    with pytest.raises(ValueError, match=f"Order ID 999 does not exist."):
+        tracker.apply(message("C",order_id=999,size=10))
 
-    def test_unknown_cancellation_is_rejected():
-        tracker = OrderTracker()
-        with pytest.raises(KeyError, match="unknown order"):
-            tracker.apply(message("C",order_id_=999,size=10))
+def test_over_cancelation_is_rejected():
+    tracker = OrderTracker()
+    tracker.apply(message("A",size=100))
+    with pytest.raises(ValueError, match="Cannot cancel 101 from order ID 1 because only 100 is available."):
+        tracker.apply(message("C",size=101))
 
-    def test_over_cancelation_is_rejected():
-        tracker = OrderTracker()
-        tracker.apply(message("A",size=100))
-        with pytest.raises(ValueError, match="only 100 remain"):
-            tracker.apply(message("C",size=101))
+def test_clear_removes_all_orders():
+    tracker = OrderTracker()
+    tracker.apply(message("A",order_id=1))
+    tracker.apply(message("A",order_id=2,side="A"))
+    assert len(tracker)==2
+    tracker.apply(message("R"))
+    assert len(tracker)==0
 
-    def test_clear_removes_all_orders():
-        tracker = OrderTracker()
-        tracker.apply(message("A",order_id=1))
-        tracker.apply(message("A",order_id=2,side="A"))
-        assert len(tracker==2)
-        tracker.apply(message("R"))
-        assert len(tracker==0)
-
-    @pytest.mark.parametrize("action",["T","F","N"])
-    def test_unknown_book_actions_are_ignored(action):
-        tracker = OrderTracker()
-        tracker.apply(message(action))
-        assert len(tracker)==0
+@pytest.mark.parametrize("action",["T","F","N"])
+def test_unknown_book_actions_are_ignored(action):
+    tracker = OrderTracker()
+    tracker.apply(message(action))
+    assert len(tracker)==0
