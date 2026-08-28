@@ -4,11 +4,9 @@ from dataclasses import dataclass
 @dataclass(slots=True)
 class Order:
     order_id: int
-    price: float
-    quantity: int
-    side: str  # 'buy' or 'sell'
+    price: int
     size: int
-    timestamp: int
+    side: str
     priority_ts_event: int
 
 class OrderTracker:
@@ -21,7 +19,7 @@ class OrderTracker:
         elif message.action == "A":
             self.add(message)
         elif message.action == "C":
-            self.cancel_order(message)
+             self.cancel(message)
         elif message.action == "M":
             self.modify(message)
         elif action in ("T", "F","N"):
@@ -41,12 +39,10 @@ class OrderTracker:
         order = Order(
             order_id=message.order_id,
             price=message.price,
-            quantity=message.quantity,
-            side=message.side,
             size=message.size,
-            timestamp=message.timestamp,
-            ts_event=message.ts_event
-        )
+            side=message.side,
+            priority_ts_event=message.priority_ts_event)
+
         self.orders[order.order_id] = order
 
     def cancel(self,message:db.MBOMsg) -> None:
@@ -67,14 +63,14 @@ class OrderTracker:
         order = self.orders[message.order_id]
         if message.price is not None:
             order.price = message.price
-        if message.quantity is not None:
-            order.quantity = message.quantity
+        if message.size is not None:
+            order.size = message.size
         if message.size is not None:
             order.size = message.size
         if message.side is not None:
             order.side = message.side
-        if message.timestamp is not None:
-            order.timestamp = message.timestamp
+        if message.priority_ts_event is not None:
+            order.priority_ts_event = message.priority_ts_event
         loses_priority = (message.price != order.price) or (message.size > order.size)
         order.price = message.price
         order.size = message.size

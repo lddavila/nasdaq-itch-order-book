@@ -6,17 +6,17 @@ from src.order_class import OrderTracker
 def message(
         action: str,
         order_id: int =1,
-        price: int = 100,
+        price: int = 100_000_000_000,
         size: int = 100,
         side: str = "B",
-        ts_event: int = 1_000):
+        priority_ts_event: int = 1_000):
     return SimpleNamespace(
         action=action,
         order_id=order_id,
         price=price,
         size=size,
         side=side,
-        ts_event=ts_event
+        priority_ts_event=priority_ts_event,
     )
 def test_complete_order_lifecycle():
     tracker = OrderTracker()
@@ -36,7 +36,7 @@ def test_complete_order_lifecycle():
     assert order.priority_ts_event==1_000
 
     #partially cancel 40 shares
-    tracker.apply(message("C",size=40,ts_event=2_000))
+    tracker.apply(message("C",size=40,priority_ts_event=2_000))
 
     assert tracker.get(1).size==60
 
@@ -46,7 +46,7 @@ def test_complete_order_lifecycle():
             "M",
             price=101_000_000_000,
             size=80,
-            ts_event=3_000 
+            priority_ts_event=3_000 
         )
     )
 
@@ -56,6 +56,39 @@ def test_complete_order_lifecycle():
     assert order.priority_ts_event==3_000
 
     #cancel the remaining quantity
-    tracker.apply(message("C",size=80,ts_event=4_000))
+    tracker.apply(message("C",size=80,priority_ts_event=4_000))
     assert len(tracker)==0
     assert 1 not in tracker
+
+    def test_duplicate_order_is_rejected():
+        tracker = OrderTracker()
+
+        tracker.apply(message("A"))
+
+        with pytest.raises(ValueError, match="already active"):
+            tracker.apply(message("A"))
+
+    def test_unknown_cancellation_is_rejected():
+        tracker = OrderTracker()
+        with pytest.raises(KeyError, match="unknown order"):
+            tracker.apply(message("C",order_id_=999,size=10))
+
+    def test_over_cancelation_is_rejected():
+        tracker = OrderTracker()
+        tracker.apply(message("A",size=100))
+        with pytest.raises(ValueError, match="only 100 remain"):
+            tracker.apply(message("C",size=101))
+
+    def test_clear_removes_all_orders():
+        tracker = OrderTracker()
+        tracker.apply(message("A",order_id=1))
+        tracker.apply(message("A",order_id=2,side="A"))
+        assert len(tracker==2)
+        tracker.apply(message("R"))
+        assert len(tracker==0)
+
+    @pytest.mark.parametrize("action",["T","F","N"])
+    def test_unknown_book_actions_are_ignored(action):
+        tracker = OrderTracker()
+        tracker.apply(message(action))
+        assert len(tracker)==0
