@@ -2,7 +2,7 @@ import argparse
 from datetime import datetime   
 from src.download_data import download_stock_symbol_data
 from src.parser_logic import build_parser    
-from src.reconstruct_from_raw import reconstruct_data
+from src.reconstruct_data import reconstruct_data
 from src.inspect_data import inspect_data
 
 if __name__ == "__main__":

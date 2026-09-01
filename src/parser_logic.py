@@ -25,7 +25,7 @@ def build_reconstruct_command_parser(sub_parsers):
     reconstruct_parser.add_argument('-o','--output', type=str, required=True, help='Path to save the reconstructed data')
     
     # Add required arguments for the reconstruct command
-    reconstruct_parser.add_argument("--input", required=True, help="Path to the downloaded data file")
+    #reconstruct_parser.add_argument("--input", required=True, help="Path to the downloaded data file")
 
 def build_inspect_data_command_parser(sub_parsers):
     """Builds the parser for the inspect command."""
