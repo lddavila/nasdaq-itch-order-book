@@ -3,6 +3,7 @@ from copy import error
 from pathlib import Path
 import databento as db
 from src.order_class import OrderTracker
+from src.store_unpacked_data import save_active_orders
 
 def reconstruct_data(file_path: str | Path, output_path: str | Path) -> OrderTracker:
     file_path = Path(file_path)
@@ -34,5 +35,5 @@ def reconstruct_data(file_path: str | Path, output_path: str | Path) -> OrderTra
         print(f"Actions: {dict(action_counts)}")
 
         # Save the reconstructed data to the output path
-        tracker.save(output_path)
+        save_active_orders(tracker, output_path)
         return tracker
