@@ -90,5 +90,28 @@ class OrderBook:
     def quantity_at_price(self,side:str, price:int) -> int:
         return self.levels_for_side(side).get(price,0)
 
+    def validate(self) -> None:
+        expected_bids: dict[int,int] = {}
+        expected_asks: dict[int,int] = {}
 
+        for order in self.tracker.orders.values():
+            if order.side == "B":
+                levels = expected_bids
+            elif order.side == "A":
+                levels = expected_asks
+            else:
+                raise ValueError(f"Unknown side: {order.side!r}")
+            
+        if self.bids != expected_bids:
+                raise ValueError(f"Bids do not match expected levels. Expected: {expected_bids}, Actual: {self.bids}")
 
+        if self.asks != expected_asks:
+            raise ValueError(f"Asks do not match expected levels. Expected: {expected_asks}, Actual: {self.asks}")
+
+        if any(size <=0 for size in self.bids.values()):
+            raise ValueError(f"Invalid bid sizes: {self.bids}")
+
+        if any(size <= 0 for size in self.asks.values()):
+            raise ValueError(f"Invalid ask sizes: {self.asks}")
+
+        
