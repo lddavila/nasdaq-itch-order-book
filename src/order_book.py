@@ -48,7 +48,7 @@ class OrderBook:
     def levels_for_side(self,side:str) -> dict[int,int]:
         if side == "B":
             return self.bids
-        elif side == "S":
+        elif side == "A":
             return self.asks
         else:
             raise ValueError(f"Unknown side: {side!r}")
