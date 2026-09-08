@@ -41,7 +41,7 @@ class OrderTracker:
             price=message.price,
             size=message.size,
             side=message.side,
-            priority_ts_event=message.priority_ts_event)
+            priority_ts_event=message.ts_event)
 
         self.orders[order.order_id] = order
 
@@ -69,8 +69,8 @@ class OrderTracker:
             order.size = message.size
         if message.side is not None:
             order.side = message.side
-        if message.priority_ts_event is not None:
-            order.priority_ts_event = message.priority_ts_event
+        if message.ts_event is not None:
+            order.priority_ts_event = message.ts_event
         loses_priority = (message.price != order.price) or (message.size > order.size)
         order.price = message.price
         order.size = message.size
