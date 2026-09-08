@@ -19,9 +19,9 @@ def reconstruct_data(file_path: str | Path, output_path: str | Path) -> OrderBoo
     for record_count, message in enumerate(store,start=1):
         
         action_counts[message.action] += 1
-        book.apply(message)
+        
         try:
-           pass
+           book.apply(message)
         except (KeyError, ValueError) as e:
             raise RuntimeError("Order reconstruction failed:\n"
                                f" record: {record_count:,}\n"

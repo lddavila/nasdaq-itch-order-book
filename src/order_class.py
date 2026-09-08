@@ -7,7 +7,7 @@ class Order:
     price: int
     size: int
     side: str
-    priority_ts_event: int
+    ts_event: int
 
 class OrderTracker:
     def __init__(self) -> None:
@@ -41,7 +41,7 @@ class OrderTracker:
             price=message.price,
             size=message.size,
             side=message.side,
-            priority_ts_event=message.ts_event)
+            ts_event=message.ts_event)
 
         self.orders[order.order_id] = order
 
@@ -70,7 +70,7 @@ class OrderTracker:
         if message.side is not None:
             order.side = message.side
         if message.ts_event is not None:
-            order.priority_ts_event = message.ts_event
+            order.ts_event = message.ts_event
         loses_priority = (message.price != order.price) or (message.size > order.size)
         order.price = message.price
         order.size = message.size
