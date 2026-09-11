@@ -9,14 +9,14 @@ def message(
         price: int = 100_000_000_000,
         size: int = 100,
         side: str = "B",
-        priority_ts_event: int = 1_000):
+        ts_event: int = 1_000):
     return SimpleNamespace(
         action=action,
         order_id=order_id,
         price=price,
         size=size,
         side=side,
-        priority_ts_event=priority_ts_event,
+        ts_event=ts_event,
     )
 def test_complete_order_lifecycle():
     tracker = OrderTracker()
@@ -33,10 +33,10 @@ def test_complete_order_lifecycle():
     assert order.price == 100_000_000_000
     assert order.size==100
     assert order.side=="B"
-    assert order.priority_ts_event==1_000
+    assert order.ts_event==1_000
 
     #partially cancel 40 shares
-    tracker.apply(message("C",size=40,priority_ts_event=2_000))
+    tracker.apply(message("C",size=40,ts_event=2_000))
 
     assert tracker.get(1).size==60
 
@@ -46,17 +46,17 @@ def test_complete_order_lifecycle():
             "M",
             price=101_000_000_000,
             size=80,
-            priority_ts_event=3_000 
+            ts_event=3_000 
         )
     )
 
     order = tracker.get(1)
     assert order.price==101_000_000_000
     assert order.size==80   
-    assert order.priority_ts_event==3_000
+    assert order.ts_event==3_000
 
     #cancel the remaining quantity
-    tracker.apply(message("C",size=80,priority_ts_event=4_000))
+    tracker.apply(message("C",size=80,ts_event=4_000))
     assert len(tracker)==0
     assert 1 not in tracker
 

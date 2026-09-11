@@ -101,6 +101,7 @@ class OrderBook:
                 levels = expected_asks
             else:
                 raise ValueError(f"Unknown side: {order.side!r}")
+            levels[order.price] = levels.get(order.price,0) + order.size
             
         if self.bids != expected_bids:
                 raise ValueError(f"Bids do not match expected levels. Expected: {expected_bids}, Actual: {self.bids}")
@@ -113,5 +114,7 @@ class OrderBook:
 
         if any(size <= 0 for size in self.asks.values()):
             raise ValueError(f"Invalid ask sizes: {self.asks}")
+
+        print("Successfully validated order book. All levels and sizes are consistent with the active orders.")
 
         
