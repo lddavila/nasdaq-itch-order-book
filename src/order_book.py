@@ -1,6 +1,6 @@
 import databento as db
 from src.order_class import OrderTracker
-
+from src.book_snapshot import BookSnapshot
 class OrderBook:
     def __init__(self) -> None:    
         self.tracker = OrderTracker()
@@ -117,4 +117,15 @@ class OrderBook:
 
         print("Successfully validated order book. All levels and sizes are consistent with the active orders.")
 
-        
+    def snapshot(self,ts_event: int, sequence: int) -> BookSnapshot | None:
+        bid = self.best_bid()
+        ask = self.best_ask()
+
+        if bid is None or ask is None:
+            return None
+
+        bid_price,bid_size = bid
+        ask_price, ask_size = ask
+
+        return BookSnapshot(ts_event=ts_event,sequence=sequence,bid_price=bid_price,bid_size=bid_size,ask_price=ask_price,ask_size=ask_size)
+    

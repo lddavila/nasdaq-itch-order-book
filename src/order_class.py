@@ -1,6 +1,12 @@
 import databento as db
 from dataclasses import dataclass
 
+def normalize_the_side(side: object) -> str:
+        value = getattr(side,"value",side)
+        if value not in ("A","B"):
+            raise ValueError(f"Invalid side: {value}. Must be 'A' (ask) or 'B' (bid).")
+        return value
+
 @dataclass(slots=True)
 class Order:
     order_id: int
@@ -36,11 +42,12 @@ class OrderTracker:
             raise ValueError(f"Invalid side: {message.side}. Must be 'A' (ask) or 'B' (bid).")
         if message.size <= 0: 
             raise ValueError(f"Invalid size: {message.size}. Must be greater than zero.")
+        side = normalize_the_side(message.side)
         order = Order(
             order_id=message.order_id,
             price=message.price,
             size=message.size,
-            side=message.side,
+            side=side,
             ts_event=message.ts_event)
 
         self.orders[order.order_id] = order
@@ -68,7 +75,7 @@ class OrderTracker:
         if message.size is not None:
             order.size = message.size
         if message.side is not None:
-            order.side = message.side
+            order.side = normalize_the_side(message.side)
         if message.ts_event is not None:
             order.ts_event = message.ts_event
         loses_priority = (message.price != order.price) or (message.size > order.size)
@@ -76,6 +83,8 @@ class OrderTracker:
         order.size = message.size
         if loses_priority:
             order.ts_event = message.ts_event    
+
+    
 
     def clear(self) -> None:
         self.orders.clear()
